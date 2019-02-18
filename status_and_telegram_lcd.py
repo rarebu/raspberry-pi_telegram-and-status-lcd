@@ -59,7 +59,7 @@ def get_secondlast_message():
 
 def cloud_status():
     try:
-        page = urlopen("https://mante.cloud/status.php", timeout=3)
+        page = urlopen("https://nextcloud.com", timeout=3)
     except HTTPError:
         return "Down"
     except URLError:
