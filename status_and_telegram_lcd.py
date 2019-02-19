@@ -98,7 +98,15 @@ def worker(lcd, q):
 	tele_string2 = get_secondlast_message()
 	while True:
 		try:
-			for x in range(0, 10):
+			if q.empty() == False:
+				tele_string2 = tele_string
+				tele_string = q.get()
+			lcd.clear()
+			lcd.write_string(tele_string)
+			with cursor(lcd, 2, 0):
+				lcd.write_string(tele_string2)
+			sleep(1)
+			for x in range(0, 9):
 				if q.empty() == False:
 					tele_string2 = tele_string
 					tele_string = q.get()
