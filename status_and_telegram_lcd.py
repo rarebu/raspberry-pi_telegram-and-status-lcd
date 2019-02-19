@@ -80,18 +80,36 @@ def msgh(bot, update):
 	string = update.message.text
 	string = remove_non_ascii(string)
 	user = update.message.from_user
-	queuestring = user.first_name + ': ' + string
-	logger.info(user)
-	logger.info('message from ' + user.first_name + ': '  + string)
-	q.put(queuestring)
-	try:
-		update.message.reply_text('Got your message')
-	except:
-		logger.info('whoops, getting message from telegram user failed..')
+	if string == 'temp':
+		logger2.info(user)
+		logger2.info('message from ' + user.first_name + ': '  + string)
+		try:
+			cputemp = mesaure_temp()
+			update.message.reply_text('Temperature: ' + cputemp + " C")
+		except:
+			logger2.info('requesting temp failed')
+	elif string == 'btc':
+		logger2.info(user)
+		logger2.info('message from ' + user.first_name + ': '  + string)
+		try:
+			btc_price = get_latest_bitcoin_price()
+			update.message.reply_text('BTC: ' + btc_price + ' EUR')
+		except:
+			logger2.info('requesting btc failed')
+	else:
+		queuestring = user.first_name + ': ' + string
+		logger.info(user)
+		logger.info('message from ' + user.first_name + ': '  + string)
+		q.put(queuestring)
+		try:
+			update.message.reply_text('Got your message')
+		except:
+			logger2.info('whoops, getting message from telegram user failed..')
 
 def mesaure_temp():
 	temp = os.popen('vcgencmd measure_temp').readline()
-	return (temp.replace('temp=',''))
+	temp = temp.replace('temp=','')
+	return temp[0:4]
 
 def worker(lcd, q):
 	tele_string = get_last_message()
@@ -124,7 +142,7 @@ def worker(lcd, q):
 				with cursor(lcd, 1, 0):
 					lcd.write_string('BTC ' + btc_price + ' EUR')
 				with cursor(lcd, 2, 0):
-					lcd.write_string('CPU Temp: ' + cputemp[0:4] + ' C')
+					lcd.write_string('CPU Temp: ' + cputemp + ' C')
 				with cursor(lcd, 3, 0):
 					lcd.write_string('Cloud Status: ' + status)
 				sleep(1)
