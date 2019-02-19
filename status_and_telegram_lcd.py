@@ -143,4 +143,3 @@ updater.idle()
 
 GPIO.cleanup()
 sys.exit()
-
