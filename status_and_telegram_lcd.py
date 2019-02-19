@@ -68,7 +68,7 @@ def cloud_status():
 		return 'Down'
 
 def start(bot, update):
-	update.message.reply_text('Mante, send a message (20-40 chars max)')
+	update.message.reply_text('send a message (20-40 chars max)')
 	user = update.message.from_user
 	logger2.info(user)
 	logger2.info('above user came online')
