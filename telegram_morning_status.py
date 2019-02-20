@@ -6,7 +6,7 @@ import schedule
 import time
 
 cloud_url = 'WEBPAGE URL HERE'
-my_token = 'YOUR TOKEN HERE'
+my_token = 'YOUR TELEGRAM TOKEN HERE'
 lumen_id = 'TELEGRAM USER1 ID HERE'
 alice_id = 'TELEGRAM USER2 ID HERE'
 
