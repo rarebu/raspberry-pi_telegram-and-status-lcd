@@ -33,6 +33,72 @@ handler2.setFormatter(formatter)
 logger.addHandler(handler)
 logger2.addHandler(handler2)
 
+def get_node1_status():
+	p1 = subprocess.Popen(['wget', 'https://securenodes2.eu.zensystem.io/nodes/14420/detail', '-q', '-O', '-'], stdout=subprocess.PIPE)
+	p2 = subprocess.Popen(['grep', '-o', '-P', '.{0,0}State.{5,13}'], stdin=p1.stdout, stdout=subprocess.PIPE)
+	p1.stdout.close()
+	p3 = subprocess.Popen(['cut', '-c', '17-'], stdin=p2.stdout, stdout=subprocess.PIPE)
+	p2.stdout.close()
+	output,err = p3.communicate()
+	output = output.decode('utf-8')
+	output = output[0:2]
+	if output == 'up':
+		return True
+	else:
+		return False
+
+def get_node2_status():
+	p1 = subprocess.Popen(['wget', 'https://securenodes4.eu.zensystem.io/nodes/15500/detail', '-q', '-O', '-'], stdout=subprocess.PIPE)
+	p2 = subprocess.Popen(['grep', '-o', '-P', '.{0,0}State.{5,13}'], stdin=p1.stdout, stdout=subprocess.PIPE)
+	p1.stdout.close()
+	p3 = subprocess.Popen(['cut', '-c', '17-'], stdin=p2.stdout, stdout=subprocess.PIPE)
+	p2.stdout.close()
+	output,err = p3.communicate()
+	output = output.decode('utf-8')
+	output = output[0:2]
+	if output == 'up':
+		return True
+	else:
+		return False
+
+def get_node3_status():
+	p1 = subprocess.Popen(['wget', 'https://securenodes2.eu.zensystem.io/nodes/15635/detail', '-q', '-O', '-'], stdout=subprocess.PIPE)
+	p2 = subprocess.Popen(['grep', '-o', '-P', '.{0,0}State.{5,13}'], stdin=p1.stdout, stdout=subprocess.PIPE)
+	p1.stdout.close()
+	p3 = subprocess.Popen(['cut', '-c', '17-'], stdin=p2.stdout, stdout=subprocess.PIPE)
+	p2.stdout.close()
+	output,err = p3.communicate()
+	output = output.decode('utf-8')
+	output = output[0:2]
+	if output == 'up':
+		return True
+	else:
+		return False
+
+def get_node7_status():
+	p1 = subprocess.Popen(['wget', 'https://securenodes2.eu.zensystem.io/nodes/15656/detail', '-q', '-O', '-'], stdout=subprocess.PIPE)
+	p2 = subprocess.Popen(['grep', '-o', '-P', '.{0,0}State.{5,13}'], stdin=p1.stdout, stdout=subprocess.PIPE)
+	p1.stdout.close()
+	p3 = subprocess.Popen(['cut', '-c', '17-'], stdin=p2.stdout, stdout=subprocess.PIPE)
+	p2.stdout.close()
+	output,err = p3.communicate()
+	output = output.decode('utf-8')
+	output = output[0:2]
+	if output == 'up':
+		return True
+	else:
+		return False
+
+def check_all_nodes():
+	s1 = get_node1_status()
+	s2 = get_node2_status()
+	s3 = get_node3_status()
+	s7 = get_node7_status()
+	if s1 == True and s2 == True and s3 == True and s7 == True:
+		return 'Up'
+	else:
+		return 'Down'
+
 def get_latest_bitcoin_price():
 	with urllib.request.urlopen('https://blockchain.info/ticker') as url:
 		data = json.loads(url.read().decode())
@@ -134,8 +200,9 @@ def worker(lcd, q):
 						lcd.write_string(tele_string2)
 				sleep(1)
 			btc_price = get_latest_bitcoin_price()
-			status = cloud_status()
+			cloudstatus = cloud_status()
 			cputemp = mesaure_temp()
+			nodestatus = check_all_nodes()
 			for x in range(0, 10):
 				lcd.clear()
 				lcd.write_string(datetime.now().strftime('%b %d  %H:%M:%S'))
@@ -144,7 +211,7 @@ def worker(lcd, q):
 				with cursor(lcd, 2, 0):
 					lcd.write_string('CPU Temp: ' + cputemp + ' C')
 				with cursor(lcd, 3, 0):
-					lcd.write_string('Cloud Status: ' + status)
+					lcd.write_string('Cloud ' + cloudstatus + "Nodes " + nodestatus)
 				sleep(1)
 		except KeyboardInterrupt:
 			GPIO.cleanup()
