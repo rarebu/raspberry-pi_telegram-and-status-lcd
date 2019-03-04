@@ -109,7 +109,7 @@ def check_all_nodes():
 	if s1 == True and s2 == True and s3 == True and s7 == True:
 		return 'All Nodes Up'
 	else:
-		rstr = 'Node 1: ' + s1 + ' Node 2: ' + s2 + ' Node 3: ' + s3 + ' Node 7: ' + s7
+		rstr = 'Node 1: ' + str(s1) + ' Node 2: ' + str(s2) + ' Node 3: ' + str(s3) + ' Node 7: ' + str(s7)
 		return rstr
 
 schedule.every().day.at("08:00").do(send_morningstatus)
