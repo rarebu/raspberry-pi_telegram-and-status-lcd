@@ -43,9 +43,9 @@ def get_node1_status():
 	output = output.decode('utf-8')
 	output = output[0:2]
 	if output == 'up':
-		return True
+		return 'up'
 	else:
-		return False
+		return 'do'
 
 def get_node2_status():
 	p1 = subprocess.Popen(['wget', 'https://securenodes4.eu.zensystem.io/nodes/15500/detail', '-q', '-O', '-'], stdout=subprocess.PIPE)
@@ -57,9 +57,9 @@ def get_node2_status():
 	output = output.decode('utf-8')
 	output = output[0:2]
 	if output == 'up':
-		return True
+		return 'up'
 	else:
-		return False
+		return 'do'
 
 def get_node3_status():
 	p1 = subprocess.Popen(['wget', 'https://securenodes2.eu.zensystem.io/nodes/15635/detail', '-q', '-O', '-'], stdout=subprocess.PIPE)
@@ -71,9 +71,9 @@ def get_node3_status():
 	output = output.decode('utf-8')
 	output = output[0:2]
 	if output == 'up':
-		return True
+		return 'up'
 	else:
-		return False
+		return 'do'
 
 def get_node7_status():
 	p1 = subprocess.Popen(['wget', 'https://securenodes2.eu.zensystem.io/nodes/15656/detail', '-q', '-O', '-'], stdout=subprocess.PIPE)
@@ -85,19 +85,9 @@ def get_node7_status():
 	output = output.decode('utf-8')
 	output = output[0:2]
 	if output == 'up':
-		return True
+		return 'up'
 	else:
-		return False
-
-def check_all_nodes():
-	s1 = get_node1_status()
-	s2 = get_node2_status()
-	s3 = get_node3_status()
-	s7 = get_node7_status()
-	if s1 == True and s2 == True and s3 == True and s7 == True:
-		return 'Up'
-	else:
-		return 'Down'
+		return 'do'
 
 def get_latest_bitcoin_price():
 	with urllib.request.urlopen('https://blockchain.info/ticker') as url:
@@ -127,11 +117,11 @@ def get_secondlast_message():
 def cloud_status():
 	try:
 		page = urlopen(cloud_url, timeout=3)
-		return 'Up '
+		return 'up'
 	except HTTPError:
-		return 'Down'
+		return 'do'
 	except URLError:
-		return 'Down'
+		return 'do'
 
 def start(bot, update):
 	update.message.reply_text('send a message (20-40 chars max)')
@@ -190,7 +180,7 @@ def worker(lcd, q):
 			with cursor(lcd, 2, 0):
 				lcd.write_string(tele_string2)
 			sleep(1)
-			for x in range(0, 9):
+			for x in range(0, 7):
 				if q.empty() == False:
 					tele_string2 = tele_string
 					tele_string = q.get()
@@ -200,18 +190,23 @@ def worker(lcd, q):
 						lcd.write_string(tele_string2)
 				sleep(1)
 			btc_price = get_latest_bitcoin_price()
-			cloudstatus = cloud_status()
 			cputemp = mesaure_temp()
-			nodestatus = check_all_nodes()
-			for x in range(0, 10):
+			ns1 = get_node1_status()
+			ns2 = get_node2_status()
+			ns3 = get_node3_status()
+			ns7 = get_node7_status()
+			cloudstatus = cloud_status()
+			statusstring = 'N1' + ns1 + ' N2' + ns2 + ' N3' + ns3 + ' N7' + ns7
+			print(statusstring)
+			for x in range(0, 13):
 				lcd.clear()
 				lcd.write_string(datetime.now().strftime('%b %d  %H:%M:%S'))
 				with cursor(lcd, 1, 0):
 					lcd.write_string('BTC ' + btc_price + ' EUR')
 				with cursor(lcd, 2, 0):
-					lcd.write_string('CPU Temp: ' + cputemp + ' C')
+					lcd.write_string('CPU ' + cputemp + ' C ' + 'Cloud ' + cloudstatus)
 				with cursor(lcd, 3, 0):
-					lcd.write_string('Cloud ' + cloudstatus + "Nodes " + nodestatus)
+					lcd.write_string(statusstring)
 				sleep(1)
 		except KeyboardInterrupt:
 			GPIO.cleanup()
